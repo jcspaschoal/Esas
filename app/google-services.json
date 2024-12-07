@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "218308435160",
+    "project_id": "projeto-pdm-871af",
+    "storage_bucket": "projeto-pdm-871af.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:218308435160:android:43ad556feb66fb65240bad",
+        "android_client_info": {
+          "package_name": "com.pdm.esas"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCjM1PouDKhL4tkQLbjF17YJRtyxw8G2Sw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
