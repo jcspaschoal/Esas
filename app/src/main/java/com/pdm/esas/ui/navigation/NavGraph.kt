@@ -24,9 +24,7 @@ fun NavGraph(
         startDestination = startDestination
     ) {
         composable(Destination.Login.route) {
-            val viewModel: LoginViewModel = hiltViewModel()
             LoginView(
-                viewModel = viewModel,
                 modifier = modifier
                     .fillMaxSize()
                     .imePadding()
@@ -37,7 +35,7 @@ fun NavGraph(
             }
         }
 
-        composable(Destination.Home.route) {
+        composable(Destination.Home.route ) {
             HomeScreen(modifier = modifier)
         }
     }

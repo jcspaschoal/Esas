@@ -3,18 +3,36 @@ package com.pdm.esas.ui.navigation
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 
+
+enum class Role {
+    admin,
+    volunteer,
+}
+
+
 object Destination {
-    data object Login : Screen("login")
-    data object ServerUnreachable : Screen("server-unreachable")
-    data object Calendar : Screen("calendar")
-    data object Home : Screen("home")
-    data object Task : Screen("task")
-    data object Report : Screen("report")
-    data object Visitante : Screen("visit")
+    data object Home : Screen("home", requiredRoles = emptyList())
+    data object Login : Screen("login", requiredRoles = emptyList())
+    data object Report : Screen("report", requiredRoles = listOf(Role.admin.name))
+    data object Visit : Screen("visit", requiredRoles = listOf("visitor"))
+
+    data object Calendar :
+        Screen("calendar") {
+        data object Task :
+            DynamicScreen("calendar/task", "taskId")
+    }
 
 
 
-    abstract class Screen(baseRoute: String) {
+    data object TaskDetail : Screen("task") {
+        data object Task :
+            DynamicScreen("task", "taskId", requiredRoles = listOf("admin"))
+    }
+
+
+    abstract class Screen(
+        baseRoute: String, val requiredRoles: List<String> = emptyList()
+    ) {
         companion object {
             const val BASE_DEEPLINK_URL = "app://esas"
         }
@@ -23,10 +41,12 @@ object Destination {
         open val deeplink = "$BASE_DEEPLINK_URL/$baseRoute"
     }
 
+
     abstract class DynamicScreen(
         private val baseRoute: String,
         private val routeArgName: String,
-    ) : Screen(baseRoute) {
+        requiredRoles: List<String> = emptyList()
+    ) : Screen(baseRoute, requiredRoles) {
 
         val navArguments = listOf(navArgument(routeArgName) { type = NavType.StringType })
 
@@ -35,6 +55,12 @@ object Destination {
 
         fun dynamicRoute(param: String) = "$baseRoute/$param"
 
-        fun dynamicDeeplink(param: String) = "$BASE_DEEPLINK_URL/$baseRoute/${param}"
+        fun dynamicDeeplink(param: String) = "$BASE_DEEPLINK_URL/$baseRoute/$param"
     }
+
+
+    fun hasAccess(requiredRoles: List<String>, userRoles: List<String>): Boolean {
+        return requiredRoles.isEmpty() || requiredRoles.any { it in userRoles }
+    }
+
 }

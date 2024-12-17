@@ -39,18 +39,18 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.pdm.esas.R
 import kotlinx.coroutines.launch
 
 @Composable
 fun LoginView(
-    viewModel: LoginViewModel,
     modifier: Modifier = Modifier,
+    viewModel: LoginViewModel = hiltViewModel(),
     onLoginSuccess: () -> Unit
 ) {
     val state = viewModel.state.value
-    // #TODO CRIAR COMPONENTE DE SNABACKBAR MAIS INTELIGENTE E GENERICO, COM CORES QUE REFLETEM O A GRAVIDADE DO PROBLEMA
-    // SUGESTAO É CRIAR UM BASEVIEW MODEL QUE PODE SER PASSADO PARA TODOS OS VIEW MODELS QUE VOU CRIAR
+
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
@@ -71,7 +71,7 @@ fun LoginView(
                 .fillMaxSize()
                 .padding(innerPadding)
                 .imePadding(),
-            color = MaterialTheme.colorScheme.background
+            color = MaterialTheme.colorScheme.background // Cor de fundo do tema
         ) {
             Column(
                 modifier = Modifier
@@ -81,25 +81,24 @@ fun LoginView(
                 verticalArrangement = Arrangement.Center
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.logo), // Mudar para o logo correto
+                    painter = painterResource(id = R.drawable.logo),
                     contentDescription = "Logo",
                     modifier = Modifier
                         .size(100.dp)
                         .padding(bottom = 24.dp)
                 )
 
-                // Título da tela
                 Text(
                     text = "Login",
                     style = MaterialTheme.typography.headlineMedium,
+                    color = MaterialTheme.colorScheme.onBackground, // Cor do texto ajustada
                     modifier = Modifier.padding(bottom = 24.dp)
                 )
 
-                // Campo de Email
                 OutlinedTextField(
                     value = state.username,
                     onValueChange = { viewModel.onUsernameChange(it) },
-                    label = { Text("Email") },
+                    label = { Text("Email", color = MaterialTheme.colorScheme.primary) }, // Ajuste de cor
                     isError = state.emailError != null,
                     modifier = Modifier
                         .fillMaxWidth(),
@@ -109,16 +108,15 @@ fun LoginView(
                         Icon(
                             imageVector = Icons.Filled.Email,
                             contentDescription = "Email",
-                            tint = MaterialTheme.colorScheme.primary
+                            tint = MaterialTheme.colorScheme.primary // Cor consistente com o tema
                         )
                     }
                 )
 
-                // Mensagem de erro do Email
                 if (state.emailError != null) {
                     Text(
                         text = state.emailError ?: "",
-                        color = MaterialTheme.colorScheme.error,
+                        color = MaterialTheme.colorScheme.error, // Cor de erro do tema
                         style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier
                             .align(Alignment.Start)
@@ -128,11 +126,10 @@ fun LoginView(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Campo de Senha
                 OutlinedTextField(
                     value = state.password,
                     onValueChange = { viewModel.onPasswordChange(it) },
-                    label = { Text("Senha") },
+                    label = { Text("Senha", color = MaterialTheme.colorScheme.primary) },
                     isError = state.passwordError != null,
                     modifier = Modifier
                         .fillMaxWidth(),
@@ -150,7 +147,6 @@ fun LoginView(
                     }
                 )
 
-                // Mensagem de erro da Senha
                 if (state.passwordError != null) {
                     Text(
                         text = state.passwordError ?: "",
@@ -164,7 +160,6 @@ fun LoginView(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Botão de Login
                 Button(
                     onClick = {
                         viewModel.login(onLoginSuccess)
@@ -180,20 +175,20 @@ fun LoginView(
                             modifier = Modifier
                                 .size(24.dp)
                                 .alpha(0.7f),
-                            color = MaterialTheme.colorScheme.onPrimary,
+                            color = MaterialTheme.colorScheme.onPrimary, // Cor do indicador
                             strokeWidth = 2.dp
                         )
                     } else {
                         Text(
                             text = "Entrar",
-                            style = MaterialTheme.typography.bodyLarge
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onPrimary
                         )
                     }
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Texto para cadastro ou recuperação de senha
                 TextButton(onClick = { /* Navegar para tela de cadastro ou recuperação */ }) {
                     Text(
                         text = "Esqueceu sua senha?",

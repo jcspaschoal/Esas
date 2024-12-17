@@ -1,12 +1,12 @@
 package com.pdm.esas.ui.login
 
+
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.pdm.esas.data.repository.AuthRepository
-import com.pdm.esas.data.repository.UserRepository
+import com.pdm.esas.usecases.LoginResult
+import com.pdm.esas.usecases.LoginUseCase
 import com.pdm.esas.utils.log.Logger
-import com.pdm.esas.utils.response.AuthErrorResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -23,21 +23,17 @@ data class LoginState(
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val authRepository: AuthRepository,
-    private val userRepository: UserRepository
+    private val loginUseCase: LoginUseCase
 ) : ViewModel() {
 
     companion object {
         private const val TAG = "LoginViewModel"
+        private const val GENERIC_MESSAGE =
+            "Erro ao processar os dados do usuário. Por favor, tente novamente."
     }
 
     var state = mutableStateOf(LoginState())
         private set
-
-    private val username
-        get() = state.value.username
-    private val password
-        get() = state.value.password
 
     fun onUsernameChange(newValue: String) {
         state.value = state.value.copy(username = newValue, emailError = null)
@@ -56,9 +52,11 @@ class LoginViewModel @Inject constructor(
     }
 
     fun login(onLoginSuccess: () -> Unit) {
-        var hasError = false
+        val email = state.value.username
+        val password = state.value.password
 
-        if (username.isEmpty()) {
+        var hasError = false
+        if (email.isEmpty()) {
             state.value = state.value.copy(emailError = "Email é obrigatório")
             hasError = true
         }
@@ -66,49 +64,47 @@ class LoginViewModel @Inject constructor(
             state.value = state.value.copy(passwordError = "Senha é obrigatória")
             hasError = true
         }
+        if (hasError) return
 
-        if (hasError) {
-            return
-        }
+        state.value = state.value.copy(
+            isLoading = true,
+            error = null,
+            emailError = null,
+            passwordError = null
+        )
 
-        state.value = state.value.copy(isLoading = true, error = null)
-        // #TODO TERMINAR DE CENTRALIZAR O FLUXO DE LOGIN EM OUTRA CLASSE , DE PREFERENCIA INTEGRADO COM O SNACKABAR
         viewModelScope.launch {
-            try {
-                val loginResult = authRepository.login(username, password)
-                loginResult.onSuccess { user ->
-                    authRepository.saveUserToPreferences(user)
+            val result = loginUseCase(email, password)
+            when (result) {
+                is LoginResult.Success -> {
+                    state.value = state.value.copy(isLoading = false)
+                    onLoginSuccess()
+                }
 
-                    val rolesResult = userRepository.setUserProps(user.uid)
-                    rolesResult.onSuccess {
-                        state.value = state.value.copy(isLoading = false)
-                        onLoginSuccess()
-                    }.onFailure { exception ->
-                        handleProcessingError(exception)
-                    }
-                }.onFailure { exception ->
-                    val errorResponse = AuthErrorResponse.fromException(exception as Exception)
+                is LoginResult.AuthError -> {
+                    Logger.e(TAG, "Erro de autenticacao: ${result.message}")
                     state.value = state.value.copy(
                         isLoading = false,
-                        error = errorResponse.status.description
+                        error = result.message
                     )
                 }
-            } catch (exception: Exception) {
-                handleProcessingError(exception)
+
+                is LoginResult.GeneralError -> {
+                    Logger.e(TAG, "Erro ao salvar dados em memoria: ${result.message}")
+                    state.value = state.value.copy(
+                        isLoading = false,
+                        error = GENERIC_MESSAGE
+                    )
+                }
+
+                else -> {
+                    state.value = state.value.copy(
+                        isLoading = false,
+                        error = GENERIC_MESSAGE
+                    )
+                }
             }
         }
     }
-
-    private suspend fun handleProcessingError(exception: Throwable) {
-        Logger.e(TAG, "Erro no fluxo de login: ${exception.message}")
-
-        authRepository.logout()
-
-        state.value = state.value.copy(
-            isLoading = false,
-            error = "Erro ao processar os dados do usuário. Por favor, tente novamente."
-        )
-    }
-
-
 }
+

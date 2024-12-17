@@ -2,7 +2,7 @@ package com.pdm.esas.data.repository
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.pdm.esas.data.local.preferences.UserPreferences
+import com.pdm.esas.data.local.memory.InMemoryUserInfo
 import com.pdm.esas.utils.log.Logger
 import com.pdm.esas.utils.response.AuthErrorResponse
 import kotlinx.coroutines.tasks.await
@@ -13,7 +13,7 @@ import javax.inject.Singleton
 @Singleton
 class AuthRepository @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
-    private val userPreferences: UserPreferences
+    private val inMemoryUserInfo: InMemoryUserInfo
 ) {
 
     companion object {
@@ -43,8 +43,8 @@ class AuthRepository @Inject constructor(
 
     suspend fun saveUserToPreferences(user: FirebaseUser) {
         try {
-            userPreferences.setUserEmail(user.email ?: "")
-            userPreferences.setUserId(user.uid)
+            inMemoryUserInfo.setUserEmail(user.email ?: "")
+            inMemoryUserInfo.setUserId(user.uid)
             Logger.i(TAG, "Dados do usuário salvos nas preferências")
         } catch (exception: Exception) {
             Logger.e(TAG, "Falha ao salvar os detalhes do usuário: ${exception.message}")
@@ -57,14 +57,6 @@ class AuthRepository @Inject constructor(
             Logger.d(TAG, "Tentando realizar logout")
 
             firebaseAuth.signOut()
-
-
-            // Remover detalhes do usuário nas preferências
-
-            userPreferences.removeUserId()
-            userPreferences.removeUserEmail()
-            userPreferences.removeUserName()
-            userPreferences.removeUserRoles()
 
             Logger.d(TAG, "Logout realizado com sucesso")
             Result.success(Unit)

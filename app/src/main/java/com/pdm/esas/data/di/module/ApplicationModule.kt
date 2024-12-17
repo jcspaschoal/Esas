@@ -2,7 +2,7 @@ package com.pdm.esas.data.di.module
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.pdm.esas.data.local.preferences.UserPreferences
+import com.pdm.esas.data.local.memory.InMemoryUserInfo
 import com.pdm.esas.data.repository.AuthRepository
 import com.pdm.esas.data.repository.UserRepository
 import dagger.Module
@@ -27,14 +27,14 @@ object ApplicationModule {
     @Singleton
     fun provideAuthRepository(
         auth: FirebaseAuth,
-        userPreferences: UserPreferences
-    ): AuthRepository = AuthRepository(auth, userPreferences)
+        inMemoryUserInfo: InMemoryUserInfo
+    ): AuthRepository = AuthRepository(auth, inMemoryUserInfo)
 
     @Provides
     @Singleton
     fun provideUserRepository(
         fireStore: FirebaseFirestore,
-        userPreferences: UserPreferences
-    ): UserRepository = UserRepository(fireStore, userPreferences)
+        inMemoryUserInfo: InMemoryUserInfo
+    ): UserRepository = UserRepository(fireStore, inMemoryUserInfo)
 
 }

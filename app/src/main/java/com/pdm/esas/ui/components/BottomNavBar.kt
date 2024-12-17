@@ -1,14 +1,22 @@
 package com.pdm.esas.ui.components
 
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Description
-import androidx.compose.material.icons.filled.List
-import androidx.compose.material3.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -16,50 +24,61 @@ import com.pdm.esas.ui.navigation.Destination
 
 
 data class BottomNavItem(
-    val name: String,
     val route: String,
     val icon: ImageVector
 )
 
-
 @Composable
 fun BottomNavigationBar(
     navController: NavController,
-    isAdmin: Boolean
+    userRoles: List<String>
 ) {
-    val items = mutableListOf(
-        BottomNavItem(
-            name = "Tarefas",
-            route = Destination.Task.route,
-            icon = Icons.AutoMirrored.Filled.List
-        ),
-        BottomNavItem(
-            name = "Relatórios",
-            route = Destination.Report.route,
-            icon = Icons.Default.Description
-        )
+    val navigableDestinations = listOf(
+        Destination.TaskDetail,
+        Destination.Report,
+        Destination.Calendar,
     )
 
-    if (isAdmin) {
-        items.add(
-            0,
-            BottomNavItem(
-                name = "Calendário",
-                route = Destination.Calendar.route,
-                icon = Icons.Default.CalendarToday
-            )
+    val items = navigableDestinations.filter { destination ->
+        Destination.hasAccess(destination.requiredRoles, userRoles)
+    }.map { destination ->
+        BottomNavItem(
+            route = destination.route,
+            icon = when (destination) {
+                Destination.TaskDetail -> Icons.AutoMirrored.Filled.List
+                Destination.Report -> Icons.Default.Description
+                Destination.Calendar -> Icons.Default.CalendarToday
+                else -> Icons.AutoMirrored.Filled.Help
+            }
         )
     }
 
-    NavigationBar {
+    NavigationBar(
+        modifier = Modifier
+            .padding(bottom = 0.dp)
+            .height(70.dp),
+        containerColor = MaterialTheme.colorScheme.surface, // Cor de fundo da barra
+        contentColor = MaterialTheme.colorScheme.onSurface // Cor padrão dos ícones
+    ) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
 
         items.forEach { item ->
             val selected = currentRoute == item.route
             NavigationBarItem(
-                icon = { Icon(item.icon, contentDescription = item.name) },
-                label = { Text(item.name) },
+                icon = {
+                    Icon(
+                        imageVector = item.icon,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .padding(top = 8.dp),
+                        tint = if (selected) {
+                            MaterialTheme.colorScheme.primary // Ícone selecionado
+                        } else {
+                            MaterialTheme.colorScheme.onSurface // Ícone não selecionado
+                        }
+                    )
+                },
                 selected = selected,
                 onClick = {
                     if (!selected) {
@@ -71,8 +90,15 @@ fun BottomNavigationBar(
                             }
                         }
                     }
-                }
+                },
+                colors = androidx.compose.material3.NavigationBarItemDefaults.colors(
+                    selectedIconColor = MaterialTheme.colorScheme.primary,
+                    unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    indicatorColor = MaterialTheme.colorScheme.surfaceVariant
+                ),
+                alwaysShowLabel = false
             )
         }
     }
 }
+
