@@ -4,29 +4,27 @@ import androidx.navigation.NavType
 import androidx.navigation.navArgument
 
 
-enum class Role {
-    admin,
-    volunteer,
-}
-
-
 object Destination {
     data object Home : Screen("home", requiredRoles = emptyList())
     data object Login : Screen("login", requiredRoles = emptyList())
-    data object Report : Screen("report", requiredRoles = listOf(Role.admin.name))
-    data object Visit : Screen("visit", requiredRoles = listOf("visitor"))
+    data object Report : Screen("report", requiredRoles = listOf("admin"))
 
-    data object Calendar :
-        Screen("calendar") {
-        data object Task :
-            DynamicScreen("calendar/task", "taskId")
+
+    data object Calendar : Screen("calendar") {
+        data object Add : Screen("calendar/add", requiredRoles = listOf("admin"))
+        data object Presence :
+            DynamicScreen("calendar/presence", "taskId", requiredRoles = listOf("admin"))
+
+        data object TaskDetails : DynamicScreen(
+            baseRoute = "calendar/task",
+            routeArgName = "taskId",
+            requiredRoles = listOf("admin")
+        )
     }
 
 
-
     data object TaskDetail : Screen("task") {
-        data object Task :
-            DynamicScreen("task", "taskId", requiredRoles = listOf("admin"))
+        data object Task : DynamicScreen("task", "taskId", requiredRoles = listOf("admin"))
     }
 
 
