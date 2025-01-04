@@ -7,6 +7,7 @@ import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Money
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -39,6 +40,7 @@ fun BottomNavigationBar(
         Destination.Report,
         Destination.Calendar,
         Destination.Visitors,
+        Destination.Donations,
         Destination.Visit
     )
 
@@ -48,7 +50,8 @@ fun BottomNavigationBar(
         BottomNavItem(
             route = destination.route,
             icon = when (destination) {
-                //Destination.Visitors -> Icons.Default.Description
+                Destination.Donations -> Icons.Default.Money
+                Destination.Visitors -> Icons.Default.Description
                 Destination.TaskDetail -> Icons.AutoMirrored.Filled.List
                 Destination.Report -> Icons.Default.Description
                 Destination.Calendar -> Icons.Default.CalendarToday

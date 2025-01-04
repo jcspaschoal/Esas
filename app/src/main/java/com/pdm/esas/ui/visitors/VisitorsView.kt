@@ -8,8 +8,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -17,27 +22,27 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.firebase.Timestamp
 import com.pdm.esas.data.models.Visitor
 import java.util.Date
 
-
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun VisitorView(modifier: Modifier = Modifier,
-                viewModel: VisitorViewModel = hiltViewModel() ) {
+fun VisitorView(
+    modifier: Modifier = Modifier,
+    viewModel: VisitorViewModel = hiltViewModel()
+) {
+    var name by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var phone by remember { mutableStateOf("") }
+    var familySize by remember { mutableStateOf("") }
+    var description by remember { mutableStateOf("") }
+    var orders by remember { mutableStateOf("") }
+    var selectedNationality by remember { mutableStateOf("") }
+    var expanded by remember { mutableStateOf(false) }
 
-    var name by remember { mutableStateOf(TextFieldValue("")) }
-    var email by remember { mutableStateOf(TextFieldValue("")) }
-    var phone by remember { mutableStateOf(TextFieldValue("")) }
-    var family_size by remember { mutableStateOf(TextFieldValue("")) }
-    var description by remember { mutableStateOf(TextFieldValue("")) }
-    var orders by remember { mutableStateOf(TextFieldValue("")) }
-    var nationality by remember { mutableStateOf(TextFieldValue("")) }
-    var created_at by remember { mutableStateOf(TextFieldValue("")) }
-    var updated_at by remember { mutableStateOf(TextFieldValue("")) }
 
     Column(
         modifier = Modifier
@@ -55,22 +60,21 @@ fun VisitorView(modifier: Modifier = Modifier,
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
-            label = { Text("email") },
+            label = { Text("Email") },
             modifier = Modifier.fillMaxWidth()
         )
         OutlinedTextField(
             value = phone,
             onValueChange = { phone = it },
-            label = { Text("phone") },
+            label = { Text("Phone") },
             modifier = Modifier.fillMaxWidth()
         )
         OutlinedTextField(
-            value = family_size,
-            onValueChange = { family_size = it },
-            label = { Text("family_size") },
+            value = familySize,
+            onValueChange = { familySize = it },
+            label = { Text("Family Size") },
             modifier = Modifier.fillMaxWidth()
         )
-
         OutlinedTextField(
             value = description,
             onValueChange = { description = it },
@@ -80,15 +84,43 @@ fun VisitorView(modifier: Modifier = Modifier,
         OutlinedTextField(
             value = orders,
             onValueChange = { orders = it },
-            label = { Text("orders") },
+            label = { Text("Orders") },
             modifier = Modifier.fillMaxWidth()
         )
-        OutlinedTextField(
-            value = nationality,
-            onValueChange = { nationality = it },
-            label = { Text("nationality") },
-            modifier = Modifier.fillMaxWidth()
-        )
+
+        // Nationality dropdown
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = !expanded }
+        ) {
+            OutlinedTextField(
+                value = selectedNationality,
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("Nationality") },
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                },
+                colors = TextFieldDefaults.outlinedTextFieldColors(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .menuAnchor()
+            )
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                viewModel.nationalities.forEach { nationality ->
+                    androidx.compose.material3.DropdownMenuItem(
+                        text = { Text(nationality) },
+                        onClick = {
+                            selectedNationality = nationality
+                            expanded = false
+                        }
+                    )
+                }
+            }
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -97,14 +129,14 @@ fun VisitorView(modifier: Modifier = Modifier,
                 val now = Timestamp(Date())
                 viewModel.createVisitor(
                     Visitor(
-                        created_by =   viewModel.userId,
-                        name = name.text,
-                        email = email.text,
-                        phone = phone.text,
-                        family_size = family_size.text.toIntOrNull() ?: 0,
-                        description = description.text,
-                        orders = orders.text,
-                        nationality = nationality.text,
+                        created_by = viewModel.userId,
+                        name = name,
+                        email = email,
+                        phone = phone,
+                        family_size = familySize.toIntOrNull() ?: 0,
+                        description = description,
+                        orders = orders,
+                        nationality = selectedNationality,
                         created_at = now,
                         updated_at = now
                     )
@@ -115,5 +147,4 @@ fun VisitorView(modifier: Modifier = Modifier,
             Text("Criar Visitors")
         }
     }
-
 }

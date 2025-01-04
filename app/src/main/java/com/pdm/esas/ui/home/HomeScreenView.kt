@@ -20,6 +20,7 @@ import com.pdm.esas.ui.calendar.CalendarView
 import com.pdm.esas.ui.calendar.EditTaskView
 import com.pdm.esas.ui.calendar.PresenceView
 import com.pdm.esas.ui.components.BottomNavigationBar
+import com.pdm.esas.ui.donations.DonationView
 import com.pdm.esas.ui.navigation.Destination
 import com.pdm.esas.ui.report.ReportView
 import com.pdm.esas.ui.tasks.TaskView
@@ -164,6 +165,16 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                 }?.let {
                     composable(it.route) {
                         ReportView(modifier = Modifier.fillMaxSize())
+                    }
+                }
+
+                Destination.Donations.takeIf {
+                    Destination.hasAccess(it.requiredRoles, userRoles)
+                }?.let {
+                    composable(it.route) {
+                        DonationView(
+                            modifier = Modifier.fillMaxSize()
+                        )
                     }
                 }
 
