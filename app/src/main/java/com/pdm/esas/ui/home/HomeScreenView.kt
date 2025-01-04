@@ -73,12 +73,12 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                             ReportView(modifier = Modifier.fillMaxSize())
                         }
                     }
-                Destination.Visit.takeIf { Destination.hasAccess(it.requiredRoles, userRoles) }
-                    ?.let {
-                        composable(it.route){
-                            VisitView(modifier = Modifier.fillMaxSize())
-                        }
-                    }
+//                Destination.Visit.takeIf { Destination.hasAccess(it.requiredRoles, userRoles) }
+//                    ?.let {
+//                        composable(it.route){
+//                            VisitView(modifier = Modifier.fillMaxSize())
+//                        }
+//                    }
             }
         }
     }

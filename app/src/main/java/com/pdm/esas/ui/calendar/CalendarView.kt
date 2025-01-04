@@ -29,19 +29,19 @@ fun CalendarView(
     onBackClick: () -> Unit
 ) {
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("AULAS DE DEZ, 2024", fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Voltar"
-                        )
-                    }
-                }
-            )
-        }
+//        topBar = {
+//            TopAppBar(
+//                title = { Text("AULAS DE DEZ, 2024", fontWeight = FontWeight.Bold) },
+//                navigationIcon = {
+//                    IconButton(onClick = onBackClick) {
+//                        Icon(
+//                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+//                            contentDescription = "Voltar"
+//                        )
+//                    }
+//                }
+//            )
+//        }
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -54,12 +54,12 @@ fun CalendarView(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             ) {
-                Text(
-                    text = "QUINTA, 12 DE DEZEMBRO DE 2024",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
+//                Text(
+//                    text = "QUINTA, 12 DE DEZEMBRO DE 2024",
+//                    fontWeight = FontWeight.Bold,
+//                    fontSize = 18.sp,
+//                    modifier = Modifier.padding(bottom = 8.dp)
+//                )
                 CalendarGrid(
                     modifier = Modifier
                         .fillMaxWidth()

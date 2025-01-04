@@ -14,7 +14,7 @@ object Destination {
     data object Home : Screen("home", requiredRoles = emptyList())
     data object Login : Screen("login", requiredRoles = emptyList())
     data object Report : Screen("report", requiredRoles = listOf(Role.admin.name))
-    data object Visit : Screen("visit", requiredRoles = listOf("visitor"))
+    //data object Visit : Screen("visit"/*, requiredRoles = listOf("visitor")*/)
 
     data object Calendar :
         Screen("calendar") {
@@ -27,6 +27,11 @@ object Destination {
     data object TaskDetail : Screen("task") {
         data object Task :
             DynamicScreen("task", "taskId", requiredRoles = listOf("admin"))
+    }
+
+    data object Visit : Screen("visit"){
+        data object Visit :
+                DynamicScreen("visit","visitId", requiredRoles = listOf("admin"))
     }
 
 

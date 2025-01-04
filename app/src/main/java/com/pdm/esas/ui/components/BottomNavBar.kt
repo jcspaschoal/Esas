@@ -7,6 +7,7 @@ import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.People
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -48,6 +49,7 @@ fun BottomNavigationBar(
                 Destination.TaskDetail -> Icons.AutoMirrored.Filled.List
                 Destination.Report -> Icons.Default.Description
                 Destination.Calendar -> Icons.Default.CalendarToday
+                Destination.Visit -> Icons.Default.People
                 else -> Icons.AutoMirrored.Filled.Help
             }
         )

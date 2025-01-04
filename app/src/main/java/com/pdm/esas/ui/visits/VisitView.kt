@@ -1,9 +1,11 @@
 package com.pdm.esas.ui.visits
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -16,8 +18,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 fun VisitView(
     modifier: Modifier = Modifier,
     viewModel: VisitViewModel = hiltViewModel(),
-    onSaveVisit: () -> Unit,
-    onCancel: () -> Unit
+    onResultSelected: (String) -> Unit
 ) {
     val state = viewModel.state.value
 
@@ -61,17 +62,6 @@ fun VisitView(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 OutlinedTextField(
-                    value = state.email,
-                    onValueChange = { viewModel.onEmailChange(it) },
-                    label = { Text("Email") },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                OutlinedTextField(
                     value = state.phoneNumber,
                     onValueChange = { viewModel.onPhoneNumberChange(it) },
                     label = { Text("Número") },
@@ -83,54 +73,31 @@ fun VisitView(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 OutlinedTextField(
-                    value = state.nationality,
-                    onValueChange = { viewModel.onNationalityChange(it) },
-                    label = { Text("Nacionalidade") },
+                    value = state.email,
+                    onValueChange = { viewModel.onEmailChange(it) },
+                    label = { Text("Email") },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                OutlinedTextField(
-                    value = state.familySize,
-                    onValueChange = { viewModel.onFamilySizeChange(it) },
-                    label = { Text("Tamanho Agregado") },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                OutlinedTextField(
-                    value = state.description,
-                    onValueChange = { viewModel.onDescriptionChange(it) },
-                    label = { Text("Descrição") },
-                    modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
+                Column(
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Button(
-                        onClick = onCancel,
-                        modifier = Modifier.weight(1f).padding(end = 8.dp)
-                    ) {
-                        Text("Cancelar")
-                    }
-
-                    Button(
-                        onClick = onSaveVisit,
-                        modifier = Modifier.weight(1f).padding(start = 8.dp)
-                    ) {
-                        Text("Guardar")
-                    }
+//                    state.searchResults.forEach { result ->
+//                        Text(
+//                            text = result,
+//                            modifier = Modifier
+//                                .fillMaxWidth()
+//                                .clickable { onResultSelected(result) }
+//                                .padding(8.dp),
+//                            style = MaterialTheme.typography.bodyLarge,
+//                            color = MaterialTheme.colorScheme.primary
+//                        )
+//                        Divider()
+//                    }
                 }
             }
         }
@@ -141,8 +108,7 @@ fun VisitView(
 @Composable
 fun VisitViewPreview() {
     VisitView(
-        onSaveVisit = { /* Simular ação de guardar */ },
-        onCancel = { /* Simular ação de cancelar */ },
+        onResultSelected = { /* Simular ação de seleção */ },
         viewModel = VisitViewModel()
     )
 }
