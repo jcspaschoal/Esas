@@ -1,3 +1,5 @@
+@file:JvmName("TelaTestVIewModelKt")
+
 package com.pdm.esas.ui.tasks
 
 import androidx.compose.material3.Text
@@ -7,7 +9,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
 fun TaskView(modifier: Modifier = Modifier,
-             viewModel: TaskViewModel = hiltViewModel() ) {
+             viewModel: TelaTestViewModel = hiltViewModel() ) {
     Text(text = "Tela Task")
 
 }

@@ -8,4 +8,5 @@ import androidx.hilt.navigation.compose.hiltViewModel
 @Composable
 fun ReportView(modifier: Modifier = Modifier,  viewModel: ReportViewModel = hiltViewModel()) {
     Text(text = "Tela Report")
+
 }

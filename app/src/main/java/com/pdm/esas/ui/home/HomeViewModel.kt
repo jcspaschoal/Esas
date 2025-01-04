@@ -17,10 +17,12 @@ class HomeViewModel @Inject constructor(
 
     private val _userRoles = MutableStateFlow<List<String>>(emptyList())
     val userRoles: StateFlow<List<String>> = _userRoles.asStateFlow()
+    val userId = inMemoryUserInfo.getUserId() ?: ""
 
     init {
         viewModelScope.launch {
             val roles = inMemoryUserInfo.getUserRoles() ?: emptyList()
+            val id = inMemoryUserInfo.getUserId() ?: ""
             _userRoles.value = roles
         }
     }

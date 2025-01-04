@@ -15,12 +15,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.pdm.esas.ui.calendar.AddTaskView
 import com.pdm.esas.ui.calendar.CalendarView
+import com.pdm.esas.ui.calendar.EditTaskView
+import com.pdm.esas.ui.calendar.PresenceView
 import com.pdm.esas.ui.components.BottomNavigationBar
 import com.pdm.esas.ui.navigation.Destination
 import com.pdm.esas.ui.report.ReportView
 import com.pdm.esas.ui.tasks.TaskView
-import com.pdm.esas.ui.visits.VisitView
+import com.pdm.esas.ui.visitors.VisitorView
 
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier) {
@@ -30,7 +33,8 @@ fun HomeScreen(modifier: Modifier = Modifier) {
 
     if (userRoles.isEmpty()) {
         Box(
-            modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center
+            modifier = modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
         ) {
             CircularProgressIndicator()
         }
@@ -42,7 +46,8 @@ fun HomeScreen(modifier: Modifier = Modifier) {
             bottomBar = {
                 if (shouldShowBottomBar) {
                     BottomNavigationBar(
-                        navController = navController, userRoles = userRoles
+                        navController = navController,
+                        userRoles = userRoles
                     )
                 }
             }
@@ -52,35 +57,108 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                 startDestination = Destination.TaskDetail.route,
                 modifier = modifier.padding(innerPadding)
             ) {
-                Destination.Calendar.takeIf { Destination.hasAccess(it.requiredRoles, userRoles) }
-                    ?.let {
-                        composable(it.route) {
+                Destination.Calendar
+                    .takeIf { Destination.hasAccess(it.requiredRoles, userRoles) }
+                    ?.let { calendarDest ->
+                        composable(calendarDest.route) {
+                            val isAdmin = userRoles.contains("admin")
+
+                            // Exemplo 1: Callback extra (onViewPresence) para navegar para Presence
                             CalendarView(
                                 modifier = Modifier.fillMaxSize(),
-                                onBackClick = { navController.popBackStack() } // Configuração para voltar
+                                onBackClick = { navController.popBackStack() },
+                                onAddTaskClick = {
+                                    navController.navigate(Destination.Calendar.Add.route)
+                                },
+                                isAdmin = isAdmin,
+                                viewModel = hiltViewModel(),
+                                onEditTaskClick = { taskId ->
+                                    navController.navigate(
+                                        Destination.Calendar.TaskDetails.dynamicRoute(taskId)
+                                    )
+                                },
+                                onViewDetailsClick = { taskId ->
+                                    navController.navigate(
+                                        Destination.Calendar.Presence.dynamicRoute(taskId)
+                                    )
+                                }
                             )
                         }
                     }
-                Destination.TaskDetail.takeIf { Destination.hasAccess(it.requiredRoles, userRoles) }
-                    ?.let {
-                        composable(it.route) {
-                            TaskView(modifier = Modifier.fillMaxSize())
-                        }
+
+
+                Destination.Calendar.TaskDetails.takeIf {
+                    Destination.hasAccess(it.requiredRoles, userRoles)
+                }?.let { taskDetailsDest ->
+                    composable(
+                        route = taskDetailsDest.route,
+                        arguments = taskDetailsDest.navArguments
+                    ) { backStackEntry ->
+                        val taskId = backStackEntry.arguments?.getString("taskId") ?: ""
+                        EditTaskView(
+                            onBackClick = { navController.popBackStack() },
+                            taskId = taskId
+                        )
                     }
-                Destination.Report.takeIf { Destination.hasAccess(it.requiredRoles, userRoles) }
-                    ?.let {
-                        composable(it.route) {
-                            ReportView(modifier = Modifier.fillMaxSize())
-                        }
+                }
+
+
+                Destination.Calendar.Presence.takeIf {
+                    Destination.hasAccess(it.requiredRoles, userRoles)
+                }?.let { presenceDest ->
+                    composable(
+                        route = presenceDest.route,
+                        arguments = presenceDest.navArguments
+                    ) { backStackEntry ->
+                        val taskId = backStackEntry.arguments?.getString("taskId") ?: ""
+                        PresenceView(
+                            taskId = taskId,
+                            onBackClick = { navController.popBackStack() },
+                        )
                     }
-//                Destination.Visit.takeIf { Destination.hasAccess(it.requiredRoles, userRoles) }
-//                    ?.let {
-//                        composable(it.route){
-//                            VisitView(modifier = Modifier.fillMaxSize())
-//                        }
-//                    }
+                }
+
+                Destination.Calendar.Add.takeIf {
+                    Destination.hasAccess(it.requiredRoles, userRoles)
+                }?.let {
+                    composable(Destination.Calendar.Add.route) {
+                        AddTaskView(
+                            adminId = homeViewModel.userId,
+                            onBackClick = { navController.popBackStack() }
+                        )
+                    }
+                }
+
+
+
+                Destination.TaskDetail.takeIf {
+                    Destination.hasAccess(it.requiredRoles, userRoles)
+                }?.let {
+                    composable(it.route) {
+                        TaskView(modifier = Modifier.fillMaxSize())
+                    }
+                }
+
+                Destination.Visitors.takeIf {
+                    Destination.hasAccess(it.requiredRoles, userRoles)
+                }?.let {
+                    composable(it.route) {
+                        VisitorView(modifier = Modifier.fillMaxSize())
+                    }
+                }
+
+
+
+                Destination.Report.takeIf {
+                    Destination.hasAccess(it.requiredRoles, userRoles)
+                }?.let {
+                    composable(it.route) {
+                        ReportView(modifier = Modifier.fillMaxSize())
+                    }
+                }
+
+
             }
         }
     }
 }
-
