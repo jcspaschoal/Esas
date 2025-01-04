@@ -18,7 +18,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 fun VisitView(
     modifier: Modifier = Modifier,
     viewModel: VisitViewModel = hiltViewModel(),
-    onResultSelected: (String) -> Unit
+
 ) {
     val state = viewModel.state.value
 
@@ -108,7 +108,6 @@ fun VisitView(
 @Composable
 fun VisitViewPreview() {
     VisitView(
-        onResultSelected = { /* Simular ação de seleção */ },
         viewModel = VisitViewModel()
     )
 }

@@ -38,7 +38,8 @@ fun BottomNavigationBar(
         Destination.TaskDetail,
         Destination.Report,
         Destination.Calendar,
-        Destination.Visitors
+        Destination.Visitors,
+        Destination.Visit
     )
 
     val items = navigableDestinations.filter { destination ->
