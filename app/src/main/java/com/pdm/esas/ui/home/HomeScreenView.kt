@@ -23,6 +23,7 @@ import com.pdm.esas.ui.components.BottomNavigationBar
 import com.pdm.esas.ui.navigation.Destination
 import com.pdm.esas.ui.report.ReportView
 import com.pdm.esas.ui.tasks.TaskView
+import com.pdm.esas.ui.visitors.VisitorView
 
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier) {
@@ -137,6 +138,16 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                         TaskView(modifier = Modifier.fillMaxSize())
                     }
                 }
+
+                Destination.Visitors.takeIf {
+                    Destination.hasAccess(it.requiredRoles, userRoles)
+                }?.let {
+                    composable(it.route) {
+                        VisitorView(modifier = Modifier.fillMaxSize())
+                    }
+                }
+
+
 
                 Destination.Report.takeIf {
                     Destination.hasAccess(it.requiredRoles, userRoles)

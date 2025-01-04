@@ -37,6 +37,7 @@ fun BottomNavigationBar(
         Destination.TaskDetail,
         Destination.Report,
         Destination.Calendar,
+        Destination.Visitors
     )
 
     val items = navigableDestinations.filter { destination ->
@@ -45,6 +46,7 @@ fun BottomNavigationBar(
         BottomNavItem(
             route = destination.route,
             icon = when (destination) {
+                Destination.Visitors -> Icons.Default.Description
                 Destination.TaskDetail -> Icons.AutoMirrored.Filled.List
                 Destination.Report -> Icons.Default.Description
                 Destination.Calendar -> Icons.Default.CalendarToday
