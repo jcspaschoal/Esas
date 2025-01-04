@@ -50,6 +50,5 @@ class VisitorRepository @Inject constructor(
         }
     }
 
-
 }
 
