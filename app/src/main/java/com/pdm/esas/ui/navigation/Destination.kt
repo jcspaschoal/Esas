@@ -10,6 +10,7 @@ object Destination {
     data object Report : Screen("report", requiredRoles = listOf("admin"))
     data object Visitors : Screen("visitor", requiredRoles = listOf("admin"))
     data object Visit : Screen("visit", requiredRoles = listOf("admin"))
+    data object Donations : Screen("donations", requiredRoles = emptyList())
 
     data object Calendar : Screen("calendar") {
         data object Add : Screen("calendar/add", requiredRoles = listOf("admin"))

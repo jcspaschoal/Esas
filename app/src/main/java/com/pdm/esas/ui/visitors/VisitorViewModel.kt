@@ -23,7 +23,39 @@ class VisitorViewModel @Inject constructor(
         private val inMemoryUserInfo: InMemoryUserInfo
     ) : ViewModel() {
 
-        val userId: String? = inMemoryUserInfo.getUserId()
+    val nationalities = listOf(
+        "Afghan", "Albanian", "Algerian", "American", "Andorran", "Angolan", "Antiguan", "Argentine",
+        "Armenian", "Australian", "Austrian", "Azerbaijani", "Bahamian", "Bahraini", "Bangladeshi",
+        "Barbadian", "Belarusian", "Belgian", "Belizean", "Beninese", "Bhutanese", "Bolivian", "Bosnian",
+        "Botswanan", "Brazilian", "Bruneian", "Bulgarian", "Burkinabé", "Burmese", "Burundian", "Cabo Verdean",
+        "Cambodian", "Cameroonian", "Canadian", "Central African", "Chadian", "Chilean", "Chinese",
+        "Colombian", "Comoran", "Congolese (Congo-Brazzaville)", "Congolese (Congo-Kinshasa)", "Costa Rican",
+        "Croatian", "Cuban", "Cypriot", "Czech", "Danish", "Djiboutian", "Dominican (Dominica)",
+        "Dominican (Dominican Republic)", "Ecuadorean", "Egyptian", "Salvadoran", "Equatorial Guinean",
+        "Eritrean", "Estonian", "Eswatini", "Ethiopian", "Fijian", "Finnish", "French", "Gabonese",
+        "Gambian", "Georgian", "German", "Ghanaian", "Greek", "Grenadian", "Guatemalan", "Guinean",
+        "Bissau-Guinean", "Guyanese", "Haitian", "Honduran", "Hungarian", "Icelander", "Indian",
+        "Indonesian", "Iranian", "Iraqi", "Irish", "Israeli", "Italian", "Ivorian", "Jamaican",
+        "Japanese", "Jordanian", "Kazakh", "Kenyan", "Kiribati", "Korean (North)", "Korean (South)",
+        "Kosovar", "Kuwaiti", "Kyrgyz", "Laotian", "Latvian", "Lebanese", "Basotho", "Liberian",
+        "Libyan", "Liechtensteiner", "Lithuanian", "Luxembourgish", "Malagasy", "Malawian", "Malaysian",
+        "Maldivian", "Malian", "Maltese", "Marshallese", "Mauritanian", "Mauritian", "Mexican",
+        "Micronesian", "Moldovan", "Monégasque", "Mongolian", "Montenegrin", "Moroccan", "Mozambican",
+        "Namibian", "Nauruan", "Nepali", "New Zealander", "Nicaraguan", "Nigerien", "Nigerian",
+        "North Macedonian", "Norwegian", "Omani", "Pakistani", "Palauan", "Palestinian", "Panamanian",
+        "Papua New Guinean", "Paraguayan", "Peruvian", "Polish", "Portuguese", "Qatari",
+        "Romanian", "Russian", "Rwandan", "Saint Kitts and Nevis", "Saint Lucian",
+        "Saint Vincentian", "Samoan", "San Marinese", "Sao Tomean", "Saudi", "Senegalese",
+        "Serbian", "Seychellois", "Sierra Leonean", "Singaporean", "Slovak", "Slovene", "Solomon Islander",
+        "Somali", "South African", "South Sudanese", "Spanish", "Sri Lankan", "Sudanese",
+        "Surinamese", "Swedish", "Swiss", "Syrian", "Tajik", "Tanzanian", "Thai", "Timorese",
+        "Togolese", "Tongan", "Trinidadian", "Tunisian", "Turkish", "Turkmen", "Tuvaluan",
+        "Ugandan", "Ukrainian", "Uruguayan", "Uzbek", "Vanuatuan", "Venezuelan", "Vietnamese",
+        "Yemeni", "Zambian", "Zimbabwean"
+    )
+
+
+    val userId: String? = inMemoryUserInfo.getUserId()
 
         private val _state = MutableStateFlow(VisitorState())
         val state: StateFlow<VisitorState> = _state
