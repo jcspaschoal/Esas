@@ -1,9 +1,8 @@
 package com.pdm.esas.data.repository
 
 import com.google.firebase.firestore.FirebaseFirestore
-import com.pdm.esas.data.models.Task
+import com.pdm.esas.data.models.Donation
 import com.pdm.esas.data.models.Visitor
-import com.pdm.esas.data.repository.TaskRepository.Companion
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 

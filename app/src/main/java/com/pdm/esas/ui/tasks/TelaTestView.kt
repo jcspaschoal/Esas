@@ -11,5 +11,4 @@ import androidx.hilt.navigation.compose.hiltViewModel
 fun TaskView(modifier: Modifier = Modifier,
              viewModel: TelaTestViewModel = hiltViewModel() ) {
     Text(text = "Tela Task")
-
 }

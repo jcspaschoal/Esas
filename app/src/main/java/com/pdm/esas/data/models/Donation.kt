@@ -6,16 +6,22 @@ import android.icu.text.NumberFormat
 enum class PaymentMethod(val displayName: String) {
     MONEY("Dinheiro"),
     CHEQUE("Cheque"),
-    MBWAY("MBWay")
+    MBWAY("MBWay");
+
+    companion object {
+        fun fromValue(value: String): PaymentMethod? {
+            return values().find { it.name == value }
+        }
+    }
 }
 
 // Modelo de dados de uma doação
 data class Donation(
-    val id: Int,
-    val donorName: String,
-    val amount: Double,
-    val description: String,
-    val paymentMethod: PaymentMethod
+    val id: String = "", // Default value for no-argument constructor
+    val donorName: String = "",
+    val amount: Double = 0.0,
+    val description: String = "",
+    val paymentMethod: PaymentMethod = PaymentMethod.MONEY // Default to a valid enum value
 )
 
 // Função para formatar o valor no formato Euro (€)

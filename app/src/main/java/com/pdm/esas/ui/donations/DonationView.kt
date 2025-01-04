@@ -1,14 +1,20 @@
 package com.pdm.esas.ui.donations
 
+
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import PaymentMethodDropdown
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -21,8 +27,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.ui.text.style.TextAlign
+
 import com.pdm.esas.data.models.PaymentMethod
 
 
@@ -102,17 +108,40 @@ fun DonationView(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Lista de doações
-        LazyColumn(modifier = Modifier.fillMaxWidth()) {
-            items(viewModel.donations) { donation ->
-                DonationItem(
-                    donation = donation,
-                    onDelete = { viewModel.deleteDonation(donation.id) },
-                    onEdit = { donorName, amount, description, paymentMethod ->
-                        viewModel.updateDonation(donation.id, donorName, amount, description, paymentMethod)
+        val donationsResult by viewModel.donations.collectAsState(initial = Result.success(emptyList()))
+        val donations = donationsResult.getOrNull().orEmpty()
+
+        when {
+            donationsResult.isSuccess -> {
+                LazyColumn(modifier = Modifier.fillMaxWidth()) {
+                    items(donations) { donation ->
+                        DonationItem(
+                            donation = donation,
+                            onDelete = { viewModel.deleteDonation(donation.id) },
+                            onEdit = { donorName, amount, description, paymentMethod ->
+                                viewModel.updateDonation(donation.id, donorName, amount, description, paymentMethod)
+                            }
+                        )
                     }
+                }
+            }
+
+            donationsResult.isFailure -> {
+                val errorMessage = donationsResult.exceptionOrNull()?.message ?: "Unknown error"
+                Text(
+                    text = "Failed to load donations: $errorMessage",
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center
                 )
+            }
+
+            else -> {
+                CircularProgressIndicator(modifier = Modifier.fillMaxWidth())
             }
         }
     }
 }
+
+
+
+
