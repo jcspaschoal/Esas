@@ -82,9 +82,9 @@ fun LoginView(
             ) {
                 Text(
                     text = "Bem vindo!",
-                    style = MaterialTheme.typography.headlineMedium,
+                    style = MaterialTheme.typography.headlineLarge,
                     color = MaterialTheme.colorScheme.onBackground, // Cor do texto ajustada
-                    modifier = Modifier.padding(bottom = 24.dp)
+                    modifier = Modifier.padding(bottom = 15.dp)
                 )
 
                 Image(
@@ -93,6 +93,7 @@ fun LoginView(
                     modifier = Modifier
                     .size(100.dp)
                     .padding(bottom = 24.dp)
+//                    .align(Alignment.CenterHorizontally)
                 )
 
                 OutlinedTextField(

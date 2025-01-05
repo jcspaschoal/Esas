@@ -24,7 +24,7 @@ import com.pdm.esas.ui.components.BottomNavigationBar
 import com.pdm.esas.ui.donations.DonationView
 import com.pdm.esas.ui.navigation.Destination
 import com.pdm.esas.ui.report.ReportView
-import com.pdm.esas.ui.tasks.TaskView
+//import com.pdm.esas.ui.tasks.TaskView
 import com.pdm.esas.ui.visitors.EditVisitorView
 import com.pdm.esas.ui.visitors.VisitorView
 import com.pdm.esas.ui.visitors.VisitorViewModel
@@ -137,13 +137,13 @@ fun HomeScreen(modifier: Modifier = Modifier) {
 
 
 
-                Destination.TaskDetail.takeIf {
-                    Destination.hasAccess(it.requiredRoles, userRoles)
-                }?.let {
-                    composable(it.route) {
-                        TaskView(modifier = Modifier.fillMaxSize())
-                    }
-                }
+//                Destination.TaskDetail.takeIf {
+//                    Destination.hasAccess(it.requiredRoles, userRoles)
+//                }?.let {
+//                    composable(it.route) {
+//                        TaskView(modifier = Modifier.fillMaxSize())
+//                    }
+//                }
 
                 Destination.Visitors.takeIf {
                     Destination.hasAccess(it.requiredRoles, userRoles)

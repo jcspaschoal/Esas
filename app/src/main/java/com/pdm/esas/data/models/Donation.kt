@@ -1,6 +1,7 @@
 package com.pdm.esas.data.models
 
 import android.icu.text.NumberFormat
+import com.google.firebase.Timestamp
 
 // Enum para representar os meios de pagamento
 enum class PaymentMethod(val displayName: String) {
@@ -21,8 +22,11 @@ data class Donation(
     val donorName: String = "",
     val amount: Double = 0.0,
     val description: String = "",
-    val paymentMethod: PaymentMethod = PaymentMethod.MONEY // Default to a valid enum value
-)
+    val paymentMethod: PaymentMethod = PaymentMethod.MONEY, // Default to a valid enum value
+    val date : Timestamp
+){
+    constructor() : this("", "", 0.0, "", PaymentMethod.MONEY, Timestamp.now())
+}
 
 // Função para formatar o valor no formato Euro (€)
 fun formatCurrencyEuro(value: Double): String {

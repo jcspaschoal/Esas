@@ -5,10 +5,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.filled.Analytics
+import androidx.compose.material.icons.filled.BarChart
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Money
 import androidx.compose.material.icons.filled.People
+import androidx.compose.material.icons.filled.QueryStats
+import androidx.compose.material.icons.filled.VolunteerActivism
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -36,7 +41,7 @@ fun BottomNavigationBar(
     userRoles: List<String>
 ) {
     val navigableDestinations = listOf(
-        Destination.TaskDetail,
+        //Destination.TaskDetail,
         Destination.Report,
         Destination.Calendar,
         //Destination.Visitors,
@@ -50,11 +55,11 @@ fun BottomNavigationBar(
         BottomNavItem(
             route = destination.route,
             icon = when (destination) {
-                Destination.Donations -> Icons.Default.Money
+                Destination.Donations -> Icons.Default.VolunteerActivism
                 //Destination.Visitors -> Icons.Default.Description
-                Destination.TaskDetail -> Icons.AutoMirrored.Filled.List
-                Destination.Report -> Icons.Default.Description
-                Destination.Calendar -> Icons.Default.CalendarToday
+                //Destination.TaskDetail -> Icons.AutoMirrored.Filled.List
+                Destination.Report -> Icons.Default.QueryStats
+                Destination.Calendar -> Icons.Default.CalendarMonth
                 Destination.Visit -> Icons.Default.People
                 else -> Icons.AutoMirrored.Filled.Help
             }

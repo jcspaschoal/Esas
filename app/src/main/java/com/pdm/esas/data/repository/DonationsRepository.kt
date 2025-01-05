@@ -21,7 +21,8 @@ class DonationsRepository @Inject constructor(
                 "donorName" to donation.donorName,
                 "amount" to donation.amount,
                 "description" to donation.description,
-                "paymentMethod" to donation.paymentMethod.name
+                "paymentMethod" to donation.paymentMethod.name,
+                "date" to donation.date
             )
 
             // Use Firestore's automatic document ID generation

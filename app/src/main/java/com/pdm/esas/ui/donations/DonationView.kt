@@ -86,7 +86,7 @@ fun DonationView(
         // Dropdown para selecionar o meio de pagamento
         PaymentMethodDropdown(
             selectedPaymentMethod = selectedPaymentMethod,
-            onPaymentMethodChange = { selectedPaymentMethod = it }
+            onPaymentMethodChange = { selectedPaymentMethod = it}
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -119,7 +119,7 @@ fun DonationView(
                             donation = donation,
                             onDelete = { viewModel.deleteDonation(donation.id) },
                             onEdit = { donorName, amount, description, paymentMethod ->
-                                viewModel.updateDonation(donation.id, donorName, amount, description, paymentMethod)
+                                viewModel.updateDonation(donation.id, donorName, amount, description, paymentMethod, donation.date)
                             }
                         )
                     }

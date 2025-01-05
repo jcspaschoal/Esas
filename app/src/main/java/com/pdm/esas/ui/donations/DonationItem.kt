@@ -26,6 +26,8 @@ import androidx.compose.material3.CardDefaults
 import com.pdm.esas.data.models.Donation
 import com.pdm.esas.data.models.PaymentMethod
 import com.pdm.esas.data.models.formatCurrencyEuro
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 @Composable
 fun DonationItem(
@@ -97,6 +99,10 @@ fun DonationItem(
                 Text(text = "Valor: ${formatCurrencyEuro(donation.amount)}")
                 Text(text = "Meio de pagamento: ${donation.paymentMethod.displayName}")
                 Text(text = "Descrição: ${donation.description}")
+                val formattedDate = donation.date.toDate().let {
+                    SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(it)
+                }
+                Text(text = "Data: $formattedDate")
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(horizontalArrangement = Arrangement.SpaceBetween) {
                     OutlinedButton(onClick = onDelete) {

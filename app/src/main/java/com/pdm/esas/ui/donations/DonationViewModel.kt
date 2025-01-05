@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.firebase.Timestamp
 import com.pdm.esas.data.models.Donation
 import com.pdm.esas.data.models.PaymentMethod
 import com.pdm.esas.data.repository.DonationsRepository
@@ -51,7 +52,8 @@ class DonationViewModel @Inject constructor(
                     donorName = donorName,
                     amount = amount,
                     description = description,
-                    paymentMethod = paymentMethod
+                    paymentMethod = paymentMethod,
+                    date = Timestamp.now()
                 )
 
                 repository.createDonations(newDonation).onSuccess {
@@ -67,9 +69,9 @@ class DonationViewModel @Inject constructor(
         }
     }
 
-    fun updateDonation(id: String, donorName: String, amount: Double, description: String, paymentMethod: PaymentMethod) {
+    fun updateDonation(id: String, donorName: String, amount: Double, description: String, paymentMethod: PaymentMethod, date: Timestamp) {
         viewModelScope.launch {
-            val updatedDonation = Donation(id, donorName, amount, description, paymentMethod)
+            val updatedDonation = Donation(id, donorName, amount, description, paymentMethod, date)
             val index = _donations.indexOfFirst { it.id == id }
             if (index != -1) {
                 _donations[index] = updatedDonation
