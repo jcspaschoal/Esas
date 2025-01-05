@@ -11,6 +11,7 @@ object Destination {
     data object Visitors : Screen("visitor", requiredRoles = listOf("admin"))
     data object Visit : Screen("visit", requiredRoles = listOf("admin"))
     data object Donations : Screen("donations", requiredRoles = emptyList())
+    //data object EditVisitors : Screen("editVisitor", requiredRoles = listOf("admin"))
 
     data object Calendar : Screen("calendar") {
         data object Add : Screen("calendar/add", requiredRoles = listOf("admin"))
@@ -29,6 +30,11 @@ object Destination {
         data object Task : DynamicScreen("task", "taskId", requiredRoles = listOf("admin"))
     }
 
+    data object EditVisitors : DynamicScreen(
+        baseRoute = "editVisitor",
+        routeArgName = "visitorId",
+        requiredRoles = listOf("admin")
+    )
 
     abstract class Screen(
         baseRoute: String, val requiredRoles: List<String> = emptyList()

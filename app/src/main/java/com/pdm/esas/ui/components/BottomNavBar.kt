@@ -39,7 +39,7 @@ fun BottomNavigationBar(
         Destination.TaskDetail,
         Destination.Report,
         Destination.Calendar,
-        Destination.Visitors,
+        //Destination.Visitors,
         Destination.Donations,
         Destination.Visit
     )
@@ -51,7 +51,7 @@ fun BottomNavigationBar(
             route = destination.route,
             icon = when (destination) {
                 Destination.Donations -> Icons.Default.Money
-                Destination.Visitors -> Icons.Default.Description
+                //Destination.Visitors -> Icons.Default.Description
                 Destination.TaskDetail -> Icons.AutoMirrored.Filled.List
                 Destination.Report -> Icons.Default.Description
                 Destination.Calendar -> Icons.Default.CalendarToday

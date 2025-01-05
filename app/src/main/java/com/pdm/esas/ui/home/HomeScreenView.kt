@@ -15,6 +15,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.pdm.esas.data.repository.VisitorRepository
 import com.pdm.esas.ui.calendar.AddTaskView
 import com.pdm.esas.ui.calendar.CalendarView
 import com.pdm.esas.ui.calendar.EditTaskView
@@ -24,7 +25,9 @@ import com.pdm.esas.ui.donations.DonationView
 import com.pdm.esas.ui.navigation.Destination
 import com.pdm.esas.ui.report.ReportView
 import com.pdm.esas.ui.tasks.TaskView
+import com.pdm.esas.ui.visitors.EditVisitorView
 import com.pdm.esas.ui.visitors.VisitorView
+import com.pdm.esas.ui.visitors.VisitorViewModel
 import com.pdm.esas.ui.visits.VisitView
 
 @Composable
@@ -149,12 +152,38 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                     }
                 }
 
+                Destination.EditVisitors.takeIf {
+                    Destination.hasAccess(it.requiredRoles, userRoles)
+                }?.let {
+                    composable(
+                        route = it.route,
+                        arguments = it.navArguments
+                    ) { backStackEntry ->
+                        val visitorId = backStackEntry.arguments?.getString("visitorId") ?: ""
+                        EditVisitorView(
+                            modifier = Modifier.fillMaxSize(),
+                            visitorId = visitorId,
+                            onEditVisitorClick = {
+                                navController.navigate(Destination.Visit.route)
+                            }
+                        )
+                    }
+                }
+
+
+
                 Destination.Visit.takeIf {
                     Destination.hasAccess(it.requiredRoles, userRoles)
                 }?.let {
                     composable(it.route) {
                         VisitView(
-                            modifier = Modifier.fillMaxSize()
+                            modifier = Modifier.fillMaxSize(),
+                            onAddVisitorClick = {
+                                navController.navigate(Destination.Visitors.route)
+                            },
+                            onEditVisitorClick = { visitorId ->
+                                navController.navigate(Destination.EditVisitors.dynamicRoute(visitorId ?: ""))
+                            }
                         )
                     }
                 }

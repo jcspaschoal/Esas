@@ -49,5 +49,41 @@ class VisitorRepository @Inject constructor(
         }
     }
 
+    suspend fun updateVisitor(visitor: Visitor): Result<Unit> {
+        return try {
+            val visitorId = visitor.id ?: return Result.failure(IllegalArgumentException("Visitor ID cannot be null"))
+
+            val data = hashMapOf<String, Any?>()
+            data["name"] = visitor.name
+            data["email"] = visitor.email
+            data["phone"] = visitor.phone
+            data["family_size"] = visitor.family_size
+            data["description"] = visitor.description
+            data["orders"] = visitor.orders
+            data["nationality"] = visitor.nationality
+            data["updated_at"] = visitor.updated_at
+
+            visitorsCollection.document(visitorId).update(data).await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun getVisitorById(visitorId: String): Result<Visitor> {
+        return try {
+            val document = visitorsCollection.document(visitorId).get().await()
+            val visitor = document.toObject(Visitor::class.java)?.copy(id = document.id)
+            if (visitor != null) {
+                Result.success(visitor)
+            } else {
+                Result.failure(Exception("Visitante não encontrado"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+
 }
 
