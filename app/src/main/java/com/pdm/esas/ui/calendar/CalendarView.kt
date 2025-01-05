@@ -63,17 +63,17 @@ fun CalendarView(
     val dayLabel = "$dayOfWeek, ${selectedDate.dayOfMonth} de $shortMonth"
 
     Column(modifier = modifier.fillMaxSize()) {
-        TopAppBar(
-            title = { Text(topBarTitle, fontWeight = FontWeight.Bold) },
-            navigationIcon = {
-                IconButton(onClick = onBackClick) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = ""
-                    )
-                }
-            }
-        )
+//        TopAppBar(
+//            title = { Text(topBarTitle, fontWeight = FontWeight.Bold) },
+//            navigationIcon = {
+//                IconButton(onClick = onBackClick) {
+//                    Icon(
+//                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+//                        contentDescription = ""
+//                    )
+//                }
+//            }
+//        )
         Row(
             modifier = Modifier
                 .fillMaxWidth()

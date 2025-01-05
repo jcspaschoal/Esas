@@ -80,19 +80,19 @@ fun LoginView(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
+                Text(
+                    text = "Bem vindo!",
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = MaterialTheme.colorScheme.onBackground, // Cor do texto ajustada
+                    modifier = Modifier.padding(bottom = 24.dp)
+                )
+
                 Image(
                     painter = painterResource(id = R.drawable.logo),
                     contentDescription = "Logo",
                     modifier = Modifier
-                        .size(100.dp)
-                        .padding(bottom = 24.dp)
-                )
-
-                Text(
-                    text = "Login",
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = MaterialTheme.colorScheme.onBackground, // Cor do texto ajustada
-                    modifier = Modifier.padding(bottom = 24.dp)
+                    .size(100.dp)
+                    .padding(bottom = 24.dp)
                 )
 
                 OutlinedTextField(
@@ -129,7 +129,7 @@ fun LoginView(
                 OutlinedTextField(
                     value = state.password,
                     onValueChange = { viewModel.onPasswordChange(it) },
-                    label = { Text("Senha", color = MaterialTheme.colorScheme.primary) },
+                    label = { Text("Password", color = MaterialTheme.colorScheme.primary) },
                     isError = state.passwordError != null,
                     modifier = Modifier
                         .fillMaxWidth(),
@@ -140,7 +140,7 @@ fun LoginView(
                         IconButton(onClick = { viewModel.onPasswordVisibilityChange() }) {
                             Icon(
                                 imageVector = if (state.passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
-                                contentDescription = if (state.passwordVisible) "Ocultar senha" else "Mostrar senha",
+                                contentDescription = if (state.passwordVisible) "Ocultar password" else "Mostrar password",
                                 tint = MaterialTheme.colorScheme.primary
                             )
                         }
@@ -180,7 +180,7 @@ fun LoginView(
                         )
                     } else {
                         Text(
-                            text = "Entrar",
+                            text = "Log in",
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onPrimary
                         )
@@ -191,7 +191,7 @@ fun LoginView(
 
                 TextButton(onClick = { /* Navegar para tela de cadastro ou recuperação */ }) {
                     Text(
-                        text = "Esqueceu sua senha?",
+                        text = "Esqueci-me da palavra-passe?",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.primary
                     )

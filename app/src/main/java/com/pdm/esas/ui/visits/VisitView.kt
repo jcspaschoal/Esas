@@ -157,6 +157,7 @@ fun VisitView(
                             date = Timestamp.now()
                         )
                     )
+                    query = ""
                 }
             },
             enabled = selectedVisitor != null, // Botão só é habilitado quando um visitante é selecionado

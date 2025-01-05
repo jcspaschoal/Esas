@@ -1,5 +1,6 @@
 package com.pdm.esas.data.repository
 
+import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.pdm.esas.data.models.Donation
 import com.pdm.esas.data.models.Visitor
@@ -28,7 +29,6 @@ class VisitorRepository @Inject constructor(
             data["nationality"] = visitor.nationality
             data["created_at"] = visitor.created_at
             data["updated_at"] = visitor.updated_at
-            data["dates"] = visitor.dates
             val docRef = visitorsCollection.document()
             docRef.set(data).await()
             Result.success(docRef.id)
@@ -61,7 +61,7 @@ class VisitorRepository @Inject constructor(
             data["description"] = visitor.description
             data["orders"] = visitor.orders
             data["nationality"] = visitor.nationality
-            data["updated_at"] = visitor.updated_at
+            data["updated_at"] = Timestamp.now()
 
             visitorsCollection.document(visitorId).update(data).await()
             Result.success(Unit)

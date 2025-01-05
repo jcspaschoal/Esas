@@ -7,8 +7,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
@@ -33,7 +35,8 @@ import java.util.Date
 @Composable
 fun VisitorView(
     modifier: Modifier = Modifier,
-    viewModel: VisitorViewModel = hiltViewModel()
+    viewModel: VisitorViewModel = hiltViewModel(),
+    onCreateVisitorClick: () -> Unit
 ) {
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -44,6 +47,12 @@ fun VisitorView(
     var selectedNationality by remember { mutableStateOf("") }
     var expanded by remember { mutableStateOf(false) }
 
+    // Estados para erros
+    var nameError by remember { mutableStateOf(true) }
+    var emailError by remember { mutableStateOf(true) }
+    var phoneError by remember { mutableStateOf(true) }
+    var familySizeError by remember { mutableStateOf(true) }
+    var nationalityError by remember { mutableStateOf(true) }
 
     Column(
         modifier = Modifier
@@ -55,104 +64,177 @@ fun VisitorView(
         Text(
             text = "Registo Visitante",
             style = MaterialTheme.typography.headlineMedium,
-            color = MaterialTheme.colorScheme.onBackground, // Cor do texto ajustada
+            color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.padding(bottom = 24.dp)
         )
 
-        OutlinedTextField(
-            value = name,
-            onValueChange = { name = it },
-            label = { Text("Nome") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("Email") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        OutlinedTextField(
-            value = phone,
-            onValueChange = { phone = it },
-            label = { Text("Phone") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        OutlinedTextField(
-            value = familySize,
-            onValueChange = { familySize = it },
-            label = { Text("Family Size") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        OutlinedTextField(
-            value = description,
-            onValueChange = { description = it },
-            label = { Text("Descrição") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        OutlinedTextField(
-            value = orders,
-            onValueChange = { orders = it },
-            label = { Text("Orders") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        // Nationality dropdown
-        ExposedDropdownMenuBox(
-            expanded = expanded,
-            onExpandedChange = { expanded = !expanded }
-        ) {
+        Column {
+            // Campo Nome
             OutlinedTextField(
-                value = selectedNationality,
-                onValueChange = {},
-                readOnly = true,
-                label = { Text("Nationality") },
-                trailingIcon = {
-                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                value = name,
+                onValueChange = {
+                    name = it
+                    nameError = it.isBlank()
                 },
-                colors = TextFieldDefaults.outlinedTextFieldColors(),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .menuAnchor()
+                label = { Text("Nome") },
+                isError = nameError,
+                modifier = Modifier.fillMaxWidth()
             )
-            DropdownMenu(
+            if (nameError) {
+                Text(
+                    text = "O nome não pode estar vazio.",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+
+            // Campo Email
+            OutlinedTextField(
+                value = email,
+                onValueChange = {
+                    email = it
+                    emailError = !it.contains("@") || it.isBlank()
+                },
+                label = { Text("Email") },
+                isError = emailError,
+                modifier = Modifier.fillMaxWidth()
+            )
+            if (emailError) {
+                Text(
+                    text = "Insira um email válido.",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+
+            // Campo Telefone
+            OutlinedTextField(
+                value = phone,
+                onValueChange = {
+                    phone = it
+                    phoneError = it.length != 9 || it.any { char -> !char.isDigit() }
+                },
+                label = { Text("Telefone") },
+                isError = phoneError,
+                modifier = Modifier.fillMaxWidth()
+            )
+            if (phoneError) {
+                Text(
+                    text = "O número deve conter exatamente 9 dígitos e apenas números.",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+
+            // Campo Tamanho da Família
+            OutlinedTextField(
+                value = familySize,
+                onValueChange = {
+                    familySize = it
+                    familySizeError = it.toIntOrNull() == null || it.toInt() <= 0
+                },
+                label = { Text("Tamanho da Família") },
+                isError = familySizeError,
+                modifier = Modifier.fillMaxWidth()
+            )
+            if (familySizeError) {
+                Text(
+                    text = "O tamanho da família deve ser maior que 0.",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+
+            // Campo Descrição
+            OutlinedTextField(
+                value = description,
+                onValueChange = { description = it },
+                label = { Text("Descrição") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            // Campo Pedidos
+            OutlinedTextField(
+                value = orders,
+                onValueChange = { orders = it },
+                label = { Text("Pedidos") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            // Dropdown Nacionalidade
+            ExposedDropdownMenuBox(
                 expanded = expanded,
-                onDismissRequest = { expanded = false }
+                onExpandedChange = { expanded = !expanded }
             ) {
-                viewModel.nationalities.forEach { nationality ->
-                    androidx.compose.material3.DropdownMenuItem(
-                        text = { Text(nationality) },
-                        onClick = {
-                            selectedNationality = nationality
-                            expanded = false
-                        }
-                    )
+                OutlinedTextField(
+                    value = selectedNationality,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Nacionalidade") },
+                    trailingIcon = {
+                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                    },
+                    colors = TextFieldDefaults.outlinedTextFieldColors(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .menuAnchor()
+                )
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    viewModel.nationalities.forEach { nationality ->
+                        DropdownMenuItem(
+                            text = { Text(nationality) },
+                            onClick = {
+                                selectedNationality = nationality
+                                nationalityError = false
+                                expanded = false
+                            }
+                        )
+                    }
                 }
+            }
+            if (nationalityError) {
+                Text(
+                    text = "Selecione uma nacionalidade válida.",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall
+                )
             }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Botão Criar Visitante
         Button(
             onClick = {
                 val now = Timestamp(Date())
-                viewModel.createVisitor(
-                    Visitor(
-                        created_by = viewModel.userId,
-                        name = name,
-                        email = email,
-                        phone = phone,
-                        family_size = familySize.toIntOrNull() ?: 0,
-                        description = description,
-                        orders = orders,
-                        nationality = selectedNationality,
-                        created_at = now,
-                        updated_at = now
+                if (!nameError && !emailError && !phoneError && !familySizeError && !nationalityError) {
+                    viewModel.createVisitor(
+                        Visitor(
+                            created_by = viewModel.userId,
+                            name = name,
+                            email = email,
+                            phone = phone,
+                            family_size = familySize.toInt(),
+                            description = description,
+                            orders = orders,
+                            nationality = selectedNationality,
+                            created_at = now,
+                            updated_at = now
+                        )
                     )
-                )
+                    onCreateVisitorClick()
+                }
             },
+            enabled = !nameError && !emailError && !phoneError && !familySizeError && !nationalityError,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Criar Visitors")
+            Text("Criar Visitante")
         }
+
     }
 }
+
+

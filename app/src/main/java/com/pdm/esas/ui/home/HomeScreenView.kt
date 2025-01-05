@@ -45,7 +45,8 @@ fun HomeScreen(modifier: Modifier = Modifier) {
         }
     } else {
         val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
-        val shouldShowBottomBar = currentRoute != Destination.Calendar.route
+        //val shouldShowBottomBar = currentRoute != Destination.Calendar.route
+        val shouldShowBottomBar = true
 
         Scaffold(
             bottomBar = {
@@ -59,7 +60,7 @@ fun HomeScreen(modifier: Modifier = Modifier) {
         ) { innerPadding ->
             NavHost(
                 navController = navController,
-                startDestination = Destination.TaskDetail.route,
+                startDestination = Destination.Calendar.route,
                 modifier = modifier.padding(innerPadding)
             ) {
                 Destination.Calendar
@@ -148,7 +149,13 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                     Destination.hasAccess(it.requiredRoles, userRoles)
                 }?.let {
                     composable(it.route) {
-                        VisitorView(modifier = Modifier.fillMaxSize())
+                        VisitorView(
+                            modifier = Modifier.fillMaxSize(),
+                            onCreateVisitorClick = {
+                                navController.navigate(Destination.Visit.route)
+                            }
+                        )
+
                     }
                 }
 

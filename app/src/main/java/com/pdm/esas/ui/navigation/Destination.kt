@@ -1,5 +1,6 @@
 package com.pdm.esas.ui.navigation
 
+import androidx.collection.emptyObjectList
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 
@@ -8,10 +9,10 @@ object Destination {
     data object Home : Screen("home", requiredRoles = emptyList())
     data object Login : Screen("login", requiredRoles = emptyList())
     data object Report : Screen("report", requiredRoles = listOf("admin"))
-    data object Visitors : Screen("visitor", requiredRoles = listOf("admin"))
-    data object Visit : Screen("visit", requiredRoles = listOf("admin"))
+    data object Visitors : Screen("visitor", requiredRoles = emptyList())
+    data object Visit : Screen("visit", requiredRoles = emptyList())
     data object Donations : Screen("donations", requiredRoles = emptyList())
-    //data object EditVisitors : Screen("editVisitor", requiredRoles = listOf("admin"))
+
 
     data object Calendar : Screen("calendar") {
         data object Add : Screen("calendar/add", requiredRoles = listOf("admin"))
@@ -33,7 +34,7 @@ object Destination {
     data object EditVisitors : DynamicScreen(
         baseRoute = "editVisitor",
         routeArgName = "visitorId",
-        requiredRoles = listOf("admin")
+        requiredRoles = emptyList()
     )
 
     abstract class Screen(
