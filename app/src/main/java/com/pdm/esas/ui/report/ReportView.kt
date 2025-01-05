@@ -24,6 +24,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -33,6 +35,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.pdm.esas.data.models.Visit
+import com.pdm.esas.data.models.VisitWithVisitor
 import com.pdm.esas.ui.components.DatePickerFieldToModal
 import java.util.Calendar
 
@@ -140,6 +143,8 @@ fun ReportView(modifier: Modifier = Modifier, viewModel: ReportViewModel = hiltV
         }
     }
 }
+
+
 
 
 

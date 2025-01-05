@@ -19,10 +19,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.FirebaseFirestore
 import com.pdm.esas.data.models.Visit
+import com.pdm.esas.data.models.VisitWithVisitor
 import com.pdm.esas.data.models.Visitor
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -113,9 +117,10 @@ class ReportViewModel @Inject constructor() : ViewModel() {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Legend
+        // Legend with percentages
         Column(modifier = Modifier.fillMaxWidth()) {
             data.forEachIndexed { index, item ->
+                val percentage = (proportions[index] * 100).toInt() // Calculate percentage
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.padding(vertical = 4.dp)
@@ -126,7 +131,7 @@ class ReportViewModel @Inject constructor() : ViewModel() {
                             .background(colors[index], CircleShape)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = "${item.first}: ${item.second}")
+                    Text(text = "${item.first}: ${item.second} (${percentage}%)")
                 }
             }
         }
@@ -141,8 +146,5 @@ class ReportViewModel @Inject constructor() : ViewModel() {
     }
 }
 
-// A new data class to combine Visit and Visitor data
-data class VisitWithVisitor(
-    val visit: Visit,
-    val visitor: Visitor?
-)
+
+
