@@ -1,5 +1,6 @@
 package com.pdm.esas.ui.report
 
+import android.app.DatePickerDialog
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -13,7 +14,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,114 +29,123 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.pdm.esas.data.models.Visit
+import com.pdm.esas.ui.components.DatePickerFieldToModal
+import java.util.Calendar
 
 @Composable
-fun ReportView(modifier: Modifier = Modifier,  viewModel: ReportViewModel = hiltViewModel()) {
+fun ReportView(modifier: Modifier = Modifier, viewModel: ReportViewModel = hiltViewModel()) {
+    val nationalityCountsState = remember { mutableStateOf<Map<String, Int>?>(null) }
+    val errorState = remember { mutableStateOf<String?>(null) }
+    val visitDatesState = remember { mutableStateOf<List<VisitWithVisitor>?>(null) }
 
-                val nationalityCountsState = remember { mutableStateOf<Map<String, Int>?>(null) }
-                val errorState = remember { mutableStateOf<String?>(null) }
+    // LaunchedEffect to fetch nationality counts and visit data
+    LaunchedEffect(Unit) {
+        val nationalityResult = viewModel.countNationalities()
+        if (nationalityResult.isSuccess) {
+            nationalityCountsState.value = nationalityResult.getOrNull()
+        } else if (nationalityResult.isFailure) {
+            errorState.value = nationalityResult.exceptionOrNull()?.message
+        }
 
-                // LaunchedEffect to fetch data
-                LaunchedEffect(Unit) {
-                    val result = viewModel.countNationalities()
-                    if (result.isSuccess) {
-                        nationalityCountsState.value = result.getOrNull()
-                    } else if (result.isFailure) {
-                        errorState.value = result.exceptionOrNull()?.message
-                    }
-                }
+        // Fetch visit data with visitor details
+        val visitResult = viewModel.countVisits()
+        if (visitResult.isSuccess) {
+            visitDatesState.value = visitResult.getOrNull()
+        } else if (visitResult.isFailure) {
+            errorState.value = visitResult.exceptionOrNull()?.message
+        }
+    }
 
-                // UI
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.Top
-                ) {
-                    Text(
-                        text = "Nationality Counts (Pie Chart)",
-                        style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.padding(bottom = 16.dp)
-                    )
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(8.dp)
+    ) {
+        item {
+            Text(
+                text = "Contagem das Nacionalidades (Pie Chart)",
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+        }
 
-                    // Show error message if there's an error
-                    errorState.value?.let { error ->
-                        Text(
-                            text = "Error: $error",
-                            color = MaterialTheme.colorScheme.error,
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    }
-
-                    // Show pie chart if data is available
-                    nationalityCountsState.value?.let { nationalityCounts ->
-                        if (nationalityCounts.isNotEmpty()) {
-                            PieChart(
-                                data = nationalityCounts.map { it.key to it.value },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(300.dp)
-                                    .padding(16.dp)
-                            )
-                        } else {
-                            Text(text = "No data available.", style = MaterialTheme.typography.bodyMedium)
-                        }
-                    } ?: Text(
-                        text = "Loading...",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
-            }
-
-    @Composable
-    fun PieChart(data: List<Pair<String, Int>>, modifier: Modifier = Modifier) {
-        val total = data.sumOf { it.second }
-        val colors = generateDistinctColors(data.size)
-        val proportions = data.map { it.second.toFloat() / total.toFloat() }
-        val angles = proportions.map { it * 360f }
-
-        Canvas(modifier = modifier) {
-            var startAngle = 0f
-            angles.forEachIndexed { index, sweepAngle ->
-                drawArc(
-                    color = colors[index],
-                    startAngle = startAngle,
-                    sweepAngle = sweepAngle,
-                    useCenter = true
+        errorState.value?.let { error ->
+            item {
+                Text(
+                    text = "Error: $error",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyMedium
                 )
-                startAngle += sweepAngle
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Legend
-        Column(modifier = Modifier.fillMaxWidth()) {
-            data.forEachIndexed { index, item ->
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(vertical = 4.dp)
-                ) {
-                    Box(
+        nationalityCountsState.value?.let { nationalityCounts ->
+            if (nationalityCounts.isNotEmpty()) {
+                item {
+                    viewModel.PieChart(
+                        data = nationalityCounts.map { it.key to it.value },
                         modifier = Modifier
-                            .size(16.dp)
-                            .background(colors[index], CircleShape)
+                            .fillMaxWidth()
+                            .height(350.dp)
+                            .padding(16.dp)
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = "${item.first}: ${item.second}")
+                }
+            } else {
+                item {
+                    Text(text = "No data available.", style = MaterialTheme.typography.bodyMedium)
                 }
             }
         }
-    }
 
-    // Function to generate a list of distinct colors
-    fun generateDistinctColors(count: Int): List<Color> {
-        return List(count) { index ->
-            val hue = (index * 360f / count) % 360
-            Color.hsv(hue, 0.8f, 0.8f) // Adjust saturation and brightness as needed
+        item {
+            Spacer(modifier = Modifier.height(20.dp))
+        }
+
+        visitDatesState.value?.let { visitsWithVisitors ->
+            if (visitsWithVisitors.isNotEmpty()) {
+                item {
+                    Text(
+                        text = "Datas das Visitas",
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.padding(top = 20.dp, bottom = 8.dp)
+                    )
+                }
+
+                // Sort visits by date in descending order (newest first)
+                val sortedVisits = visitsWithVisitors.sortedByDescending { it.visit.date }
+
+                items(sortedVisits) { visitWithVisitor ->
+                    val visit = visitWithVisitor.visit
+                    val visitor = visitWithVisitor.visitor
+                    Text(
+                        text = "Visitante: ${visitor?.name ?: "Unknown"} on ${visit.date?.toDate()?.toString() ?: "Unknown Date"}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    )
+                }
+            } else {
+                item {
+                    Text(text = "No visits available.", style = MaterialTheme.typography.bodyMedium)
+                }
+            }
+        } ?: item {
+            Text(
+                text = "A carregar visitas...",
+                style = MaterialTheme.typography.bodyLarge
+            )
         }
     }
+}
+
+
+
+
+
+
+
 
 

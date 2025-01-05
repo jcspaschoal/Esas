@@ -18,10 +18,10 @@ class DonationsRepository @Inject constructor(
     suspend fun createDonations(donation: Donation): Result<String> {
         return try {
             val data = hashMapOf(
-                "name" to donation.donorName,
+                "donorName" to donation.donorName,
                 "amount" to donation.amount,
                 "description" to donation.description,
-                "payment_method" to donation.paymentMethod.name
+                "paymentMethod" to donation.paymentMethod.name
             )
 
             // Use Firestore's automatic document ID generation
