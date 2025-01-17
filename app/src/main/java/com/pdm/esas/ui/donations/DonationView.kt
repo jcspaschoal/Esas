@@ -43,11 +43,21 @@ fun DonationView(
     var selectedPaymentMethod by remember { mutableStateOf<PaymentMethod?>(null) }
 
     Column(modifier = modifier.padding(16.dp)) {
-        Text(
-            text = "Gerir doações",
-            style = MaterialTheme.typography.headlineSmall,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+        ) {
+            Text(
+                text = "Doação",
+                style = MaterialTheme.typography.headlineLarge,
+                color = com.pdm.esas.ui.theme.primaryLight,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .align(Alignment.Center)
+            )
+        }
+
 
         // Formulário para adicionar doações
         TextField(

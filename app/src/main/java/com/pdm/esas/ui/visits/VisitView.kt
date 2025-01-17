@@ -3,6 +3,7 @@ package com.pdm.esas.ui.visits
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.snapping.SnapPosition
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -18,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -27,6 +29,7 @@ import com.google.firebase.ktx.Firebase
 import com.pdm.esas.data.models.Visit
 import com.pdm.esas.data.models.Visitor
 import com.pdm.esas.data.repository.VisitRepository
+import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 
 @Composable
 fun VisitView(
@@ -45,25 +48,30 @@ fun VisitView(
             .padding(16.dp)
     ) {
 
-        Row(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+                .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
+            // Centralizar o texto "Visita"
             Text(
                 text = "Visita",
-                style = MaterialTheme.typography.headlineMedium,
-                color = MaterialTheme.colorScheme.onBackground, // Cor do texto ajustada
-                modifier = Modifier.padding(bottom = 24.dp)
+                style = MaterialTheme.typography.headlineLarge,
+                color = com.pdm.esas.ui.theme.primaryLight,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .align(Alignment.Center)
             )
 
-            IconButton(onClick = onAddVisitorClick) {
+            // Ícone alinhado à direita
+            IconButton(
+                onClick = onAddVisitorClick,
+                modifier = Modifier.align(Alignment.CenterEnd)
+            ) {
                 Icon(
                     imageVector = Icons.Default.PersonAdd,
                     contentDescription = "",
-                    tint = MaterialTheme.colorScheme.primary
+                    tint = com.pdm.esas.ui.theme.primaryLight,
                 )
             }
         }
@@ -84,7 +92,7 @@ fun VisitView(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 16.dp),
-            singleLine = true
+            singleLine = true,
         )
 
         Spacer(modifier = Modifier.height(16.dp))
