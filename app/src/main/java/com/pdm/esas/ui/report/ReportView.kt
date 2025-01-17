@@ -1,64 +1,56 @@
 package com.pdm.esas.ui.report
 
-import android.app.DatePickerDialog
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
+import android.view.ViewGroup
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.pdm.esas.data.models.Visit
+import com.github.mikephil.charting.charts.PieChart
+import com.github.mikephil.charting.components.Description
+import com.github.mikephil.charting.data.PieData
+import com.github.mikephil.charting.data.PieDataSet
+import com.github.mikephil.charting.data.PieEntry
+import com.github.mikephil.charting.formatter.PercentFormatter
 import com.pdm.esas.data.models.VisitWithVisitor
-import com.pdm.esas.ui.components.DatePickerFieldToModal
-import java.util.Calendar
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 @Composable
-fun ReportView(modifier: Modifier = Modifier, viewModel: ReportViewModel = hiltViewModel()) {
+fun ReportView(
+    modifier: Modifier = Modifier,
+    viewModel: ReportViewModel = hiltViewModel()
+) {
     val nationalityCountsState = remember { mutableStateOf<Map<String, Int>?>(null) }
     val errorState = remember { mutableStateOf<String?>(null) }
     val visitDatesState = remember { mutableStateOf<List<VisitWithVisitor>?>(null) }
 
-    // LaunchedEffect to fetch nationality counts and visit data
     LaunchedEffect(Unit) {
         val nationalityResult = viewModel.countNationalities()
         if (nationalityResult.isSuccess) {
             nationalityCountsState.value = nationalityResult.getOrNull()
-        } else if (nationalityResult.isFailure) {
+        } else {
             errorState.value = nationalityResult.exceptionOrNull()?.message
         }
 
-        // Fetch visit data with visitor details
         val visitResult = viewModel.countVisits()
         if (visitResult.isSuccess) {
             visitDatesState.value = visitResult.getOrNull()
-        } else if (visitResult.isFailure) {
+        } else {
             errorState.value = visitResult.exceptionOrNull()?.message
         }
     }
@@ -66,20 +58,23 @@ fun ReportView(modifier: Modifier = Modifier, viewModel: ReportViewModel = hiltV
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .padding(8.dp)
+            .padding(8.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        contentPadding = PaddingValues(bottom = 16.dp)
     ) {
         item {
             Text(
-                text = "Contagem das Nacionalidades (Pie Chart)",
+                text = "Distribuição de Nacionalidades",
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
         }
 
+        // Exibe erros, se houver
         errorState.value?.let { error ->
             item {
                 Text(
-                    text = "Error: $error",
+                    text = "Erro: $error",
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodyMedium
                 )
@@ -89,17 +84,19 @@ fun ReportView(modifier: Modifier = Modifier, viewModel: ReportViewModel = hiltV
         nationalityCountsState.value?.let { nationalityCounts ->
             if (nationalityCounts.isNotEmpty()) {
                 item {
-                    viewModel.PieChart(
-                        data = nationalityCounts.map { it.key to it.value },
+                    CustomPieChart(
+                        data = nationalityCounts.map { (label, value) -> label to value },
                         modifier = Modifier
-                            .fillMaxWidth()
                             .height(350.dp)
                             .padding(16.dp)
                     )
                 }
             } else {
                 item {
-                    Text(text = "No data available.", style = MaterialTheme.typography.bodyMedium)
+                    Text(
+                        text = "Sem dados de nacionalidades.",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
                 }
             }
         }
@@ -118,21 +115,33 @@ fun ReportView(modifier: Modifier = Modifier, viewModel: ReportViewModel = hiltV
                     )
                 }
 
-                // Sort visits by date in descending order (newest first)
+                // Ordena (mais recentes primeiro)
                 val sortedVisits = visitsWithVisitors.sortedByDescending { it.visit.date }
-
                 items(sortedVisits) { visitWithVisitor ->
                     val visit = visitWithVisitor.visit
                     val visitor = visitWithVisitor.visitor
+
+                    // Capitaliza o primeiro caractere do nome, se existir
+                    val capitalizedName = visitor?.name?.replaceFirstChar { it.uppercase() }
+                        ?: "Desconhecido"
+
+                    // Formata a data no padrão HH:mm dd/MM/yyyy
+                    val dateFormat = SimpleDateFormat("HH:mm dd/MM/yyyy", Locale.getDefault())
+                    val dateString = visit.date?.toDate()?.let { dateFormat.format(it) }
+                        ?: "Data desconhecida"
+
                     Text(
-                        text = "Visitante: ${visitor?.name ?: "Unknown"} on ${visit.date?.toDate()?.toString() ?: "Unknown Date"}",
+                        text = "Visitante: $capitalizedName em $dateString",
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(vertical = 4.dp)
                     )
                 }
             } else {
                 item {
-                    Text(text = "No visits available.", style = MaterialTheme.typography.bodyMedium)
+                    Text(
+                        text = "Nenhuma visita disponível.",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
                 }
             }
         } ?: item {
@@ -144,13 +153,65 @@ fun ReportView(modifier: Modifier = Modifier, viewModel: ReportViewModel = hiltV
     }
 }
 
+/**
+ * Composable que exibe um PieChart do MPAndroidChart usando valores percentuais.
+ */
+@Composable
+fun CustomPieChart(
+    data: List<Pair<String, Int>>,
+    modifier: Modifier = Modifier
+) {
+    val context = LocalContext.current
+
+    AndroidView(
+        modifier = modifier,
+        factory = { ctx ->
+            PieChart(ctx).apply {
+                layoutParams = ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+                )
+
+                setUsePercentValues(true) // Exibe como percentuais
+                description = Description().apply { text = "" }
+                isDrawHoleEnabled = false
+            }
+        },
+        update = { pieChart ->
+            // Somatório para converter os valores em frações (o MPAndroidChart faz isso se setUsePercentValues(true))
+            val total = data.sumOf { it.second }
+
+            // Cria entradas (ainda em valores absolutos, mas o setUsePercentValues(true) converte para %)
+            val entries = data.map { (label, value) ->
+                PieEntry(value.toFloat(), label)
+            }
+
+            // Gerando cores distintas para cada fatia
+            val dataSet = PieDataSet(entries, "Distribuição").apply {
+                // Função auxiliar para gerar cores distintas
+                colors = generateDistinctColorIntArray(data.size).toList()
+                valueTextSize = 14f
+                // Exibe o texto em formato de percentagem
+                valueFormatter = PercentFormatter(pieChart)
+            }
+
+            val pieData = PieData(dataSet)
+            pieData.setValueTextSize(14f)
+
+            pieChart.data = pieData
+            pieChart.invalidate() // Redesenha o gráfico
+        }
+    )
+}
 
 
-
-
-
-
-
-
-
-
+fun generateDistinctColorIntArray(size: Int): IntArray {
+    val array = IntArray(size)
+    for (i in 0 until size) {
+        val hue = (i * 360f / size) % 360
+        // Saturação e brilho ajustados para tons mais vivos
+        val color = android.graphics.Color.HSVToColor(floatArrayOf(hue, 0.9f, 0.9f))
+        array[i] = color
+    }
+    return array
+}

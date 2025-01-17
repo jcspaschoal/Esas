@@ -7,6 +7,9 @@ plugins {
     id("com.google.gms.google-services")
 }
 
+
+
+
 android {
     namespace = "com.pdm.esas"
     compileSdk = 35
@@ -81,7 +84,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation("androidx.compose.ui:ui-text:1.7.5")
     implementation("androidx.compose.material:material-icons-extended:1.7.5")
-
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 
 
 }
